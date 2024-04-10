@@ -1,0 +1,11 @@
+{
+  "name": "sopadeletras",
+  "version": "1.0.0",
+  "description": "Proyecto de sopa de letra",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Epiko",
+  "license": "ISC"
+}
