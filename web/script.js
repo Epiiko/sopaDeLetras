@@ -39,7 +39,7 @@ function pintarTablero() {
   for (let i = 0; i < TAMANOTABLERO; i++) {
     let fila = "";
     for (let j = 0; j < TAMANOTABLERO; j++) {
-      fila += tablero[i][j] + "   ";
+      fila += tablero[i][j] + " ";
     }
     console.log(fila + "\n");
   }
@@ -48,7 +48,7 @@ function inicializarTablero() {
   for (let i = 0; i < TAMANOTABLERO; i++) {
     tablero[i] = [];
     for (let j = 0; j < TAMANOTABLERO; j++) {
-      tablero[i][j] = "X";
+      tablero[i][j] = "";
     }
   }
 }
@@ -66,48 +66,65 @@ function meterPalabras() {
       let columna = Math.floor(Math.random() * TAMANOTABLERO);
       if (DIRECCION === "horizontal") {
         fila = Math.floor(Math.random() * TAMANOTABLERO);
+        console.log("ha sido horizontal");
         columna = Math.floor(
           Math.random() * (TAMANOTABLERO - palabra.length + 1)
         );
         palabra.split().forEach((letra, ind) => {
           if (
-            tablero[fila][columna + ind] != "" ||
-            tablero[fila + ind][columna] != letra
-          ) {
+            tablero[fila][columna + ind] != "") {
             colocada = false;
           }
         });
       } else if (DIRECCION === "vertical") {
+        console.log("ha sido vertical");
         fila = Math.floor(Math.random() * (TAMANOTABLERO - palabra.length + 1));
         columna = Math.floor(Math.random() * TAMANOTABLERO);
         palabra.split().forEach((letra, ind) => {
           if (
-            tablero[fila + ind][columna] != "" ||
-            tablero[fila + ind][columna] != letra
+            tablero[fila + ind][columna] != ""
           ) {
             colocada = false;
           }
         });
       } else if (DIRECCION === "diagonal") {
+        console.log("ha sido diagonal");
         fila = Math.floor(Math.random() * (TAMANOTABLERO - palabra.length + 1));
         columna = Math.floor(
           Math.random() * (TAMANOTABLERO - palabra.length + 1)
         );
         palabra.split().forEach((letra, ind) => {
+            console.log(letra + "\n");
           if (
-            tablero[fila + ind][columna + ind] != "" ||
-            tablero[fila + ind][columna + ind] != letra
+            tablero[fila + ind][columna + ind] != ""
           ) {
             colocada = false;
           }
         });
       }
+      if(colocada) colocarPalabra(fila, columna, DIRECCION, palabra);
     } while (!colocada);
-    debug("UNAAAA");
+    debug("UNAAAA" + palabra);
   });
 }
-generarTablero();
+function colocarPalabra(fila, columna, DIRECCION, palabra){
+  debug("FILA: "+ fila + " \n Columna: " + columna+ "\nPalabra:"+ palabra);
+    for(ind=0; ind<palabra.length;ind++){
+        if(DIRECCION=="horizontal"){
+          tablero[fila][columna+ind]=palabra[ind];
+        } 
 
+        if(DIRECCION=="vertical"){
+          tablero[fila+ind][columna]=palabra[ind];
+        }
+          
+        if(DIRECCION=="diagonal"){
+          tablero[fila+ind][columna+ind]=palabra[ind];
+        } 
+    };
+}
+generarTablero();
+console.log(tablero);
 //entorno de prueba hardcode
 let palabrasDePrueba = ["PERRO", "LORO", "TUCAN", "ARAÑA", "MONO"];
 let tableroDePrueba = [
@@ -118,7 +135,6 @@ let tableroDePrueba = [
   [["N"], ["A"], ["A"], ["A"], ["O"], ["A"], ["C"], ["A"]],
   [["O"], ["A"], ["L"], ["O"], ["R"], ["O"], ["A"], ["N"]],
 ];
-
 // const pintarPalabra = (w) => {
 //   w = w.toString();
 //   if (w == "EXIT") {
