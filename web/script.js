@@ -4,10 +4,10 @@ const cls = function () {
   pintarTablero(tableroDePrueba);
 };
 const debug = function (str) {
-  if (CHEAT) console.log(COLORS.RED + str + COLORS.colocadaET);
+  if (CHEAT) console.log(COLORS.RED + str + COLORS.RESET);
 };
 const COLORS = {
-  colocadaET: "\x1b[0m",
+  RESET: "\x1b[0m",
   RED: "\x1b[0;31m",
   BLUE: "\x1b[0;34m",
   YELLOW: "\x1b[0;33m",
@@ -16,11 +16,16 @@ const COLORS = {
   BOLD: "\x1b[1m",
   INVERT: "\x1b[7m",
 };
-const DIRECCIONES = {
-  HORIZONTAL: ["0", "+1"], //derecha
-  VERTICAL: ["-1", "0"], //izqd
-  DIAGONAL: ["+1", "-1"], //arriba
-};
+const DIRECCIONES = [
+  [0, +1], //E
+  [0, -1], //W
+  [+1, 0], //S
+  [-1, 0], //N
+  [+1, +1], //SE
+  [+1, -1], //SW
+  [-1, -1], //NW
+  [-1, +1], //NE
+];
 const LISTASPALABRAS = [
   ["PERRO", "LORO", "TUCAN", "ARAÑA", "MONO"],
   ["COCHE", "MOTO", "AVION", "BUS", "CASCO"],
@@ -29,12 +34,15 @@ const LISTASPALABRAS = [
 ];
 const TAMANOTABLERO = 10;
 let tablero = [];
+let listaPalabras = [];
+const VACIO=" ";
 function generarTablero() {
-  listaPalabras = LISTASPALABRAS[parseInt(Math.random() * 4)];
+  listaPalabras = LISTASPALABRAS[~~(Math.random() * LISTASPALABRAS.length)];
   inicializarTablero();
   meterPalabras();
   pintarTablero();
 }
+
 function pintarTablero() {
   for (let i = 0; i < TAMANOTABLERO; i++) {
     let fila = "";
@@ -48,80 +56,39 @@ function inicializarTablero() {
   for (let i = 0; i < TAMANOTABLERO; i++) {
     tablero[i] = [];
     for (let j = 0; j < TAMANOTABLERO; j++) {
-      tablero[i][j] = "";
+      tablero[i][j] = VACIO;
     }
   }
 }
-let listaPalabras = [];
 function meterPalabras() {
-  listaPalabras =
-    LISTASPALABRAS[parseInt(Math.random() * LISTASPALABRAS.length)];
-  const DIRECCIONES = ["horizontal", "vertical", "diagonal"];
+  listaPalabras = LISTASPALABRAS[~~(Math.random() * LISTASPALABRAS.length)];
   listaPalabras.forEach((palabra) => {
-    let colocada = true;
+    let colocada = false;
+    let dir, y ,x;
+    //
     do {
-      const DIRECCION =
-        DIRECCIONES[parseInt(Math.random() * DIRECCIONES.length)];
-      let fila = Math.floor(Math.random() * TAMANOTABLERO);
-      let columna = Math.floor(Math.random() * TAMANOTABLERO);
-      if (DIRECCION === "horizontal") {
-        fila = Math.floor(Math.random() * TAMANOTABLERO);
-        console.log("ha sido horizontal");
-        columna = Math.floor(
-          Math.random() * (TAMANOTABLERO - palabra.length + 1)
-        );
-        palabra.split().forEach((letra, ind) => {
-          if (
-            tablero[fila][columna + ind] != "") {
-            colocada = false;
-          }
-        });
-      } else if (DIRECCION === "vertical") {
-        console.log("ha sido vertical");
-        fila = Math.floor(Math.random() * (TAMANOTABLERO - palabra.length + 1));
-        columna = Math.floor(Math.random() * TAMANOTABLERO);
-        palabra.split().forEach((letra, ind) => {
-          if (
-            tablero[fila + ind][columna] != ""
-          ) {
-            colocada = false;
-          }
-        });
-      } else if (DIRECCION === "diagonal") {
-        console.log("ha sido diagonal");
-        fila = Math.floor(Math.random() * (TAMANOTABLERO - palabra.length + 1));
-        columna = Math.floor(
-          Math.random() * (TAMANOTABLERO - palabra.length + 1)
-        );
-        palabra.split().forEach((letra, ind) => {
-            console.log(letra + "\n");
-          if (
-            tablero[fila + ind][columna + ind] != ""
-          ) {
-            colocada = false;
-          }
-        });
+      dir = DIRECCIONES[~~(Math.random() * DIRECCIONES.length)];
+      //Encontramos un punto valido para los puntos x e y para el comienzo de nuestra palabra teniendo en cuenta su longitud y la dirección
+      //en la que se quiere colocar la palabra
+      y = aleatorio(0 - Math.min(dir[0]*palabra.length, 0),(TAMANOTABLERO-1)-Math.max(dir[0]*palabra.length, 0));
+      x = aleatorio(0 - Math.min(dir[1]*palabra.length, 0),(TAMANOTABLERO-1)-Math.max(dir[1]*palabra.length, 0));
+      let i=0;
+      while(i<palabra.length){
+        if(tablero[y+i*dir[0]][x+i*dir[1]]!=VACIO && tablero[y+i*dir[0]][x+i*dir[1]]!=palabra[i])
+         break;
+        i++;
       }
-      if(colocada) colocarPalabra(fila, columna, DIRECCION, palabra);
+      colocada=i==palabra.length;
     } while (!colocada);
+    //una vez se comprueba el espacio para la palabra se cambian los elementos del tablero por la letra correspondiente
+    for (let i = 0; i < palabra.length; i++) {
+      tablero[y+i*dir[0]][x+i*dir[1]]=palabra[i];
+    }
     debug("UNAAAA" + palabra);
   });
 }
-function colocarPalabra(fila, columna, DIRECCION, palabra){
-  debug("FILA: "+ fila + " \n Columna: " + columna+ "\nPalabra:"+ palabra);
-    for(ind=0; ind<palabra.length;ind++){
-        if(DIRECCION=="horizontal"){
-          tablero[fila][columna+ind]=palabra[ind];
-        } 
-
-        if(DIRECCION=="vertical"){
-          tablero[fila+ind][columna]=palabra[ind];
-        }
-          
-        if(DIRECCION=="diagonal"){
-          tablero[fila+ind][columna+ind]=palabra[ind];
-        } 
-    };
+function aleatorio(min, max){
+  return ~~(Math.random()*(max-min+1)+min);
 }
 generarTablero();
 console.log(tablero);
@@ -167,11 +134,11 @@ let tableroDePrueba = [
 //         "Error " +
 //         palabra.trim() +
 //         " no se encuentra en la sopa" +
-//         COLORS.colocadaET
+//         COLORS.RESET
 //     );
 //     recibirPalabra();
 //   }
 // }
-// function comprobarDIRECCIONES(palabra, palabrasABuscar) {
+// function comprobardirECCIONES(palabra, palabrasABuscar) {
 
 // }
