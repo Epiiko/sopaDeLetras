@@ -1,7 +1,7 @@
 //constantes
+const CHEAT = true;
 const N = 10;
 const VACIO = " ";
-const CHEAT = true;
 const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const COLORS = {
   RESET: "\x1b[0m",
@@ -28,6 +28,7 @@ const LISTASPALABRAS = [
   ["COCHE", "MOTO", "AVION", "BUS", "CASCO"],
   ["AGUA", "TIERRA", "VIENTO", "FUEGO", "HIELO"],
   ["XBOX", "SEGA", "STEAM", "MARIO", "MANDO"],
+  
 ];
 const cls = function () {
   process.stdout.write("\x1bc");
@@ -44,7 +45,16 @@ let letrasEncontradas = [];
 let listaPalabras = [];
 
 function pintarTablero(color = COLORS.BLUE) {
-  console.log("\t\t" + COLORS.GREEN + "SOPA DE LETRAS" + COLORS.RESET + "\n");
+  console.log("\t\t" + COLORS.GREEN +
+   `
+   ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+   ██░▄▄▄░██░▄▄▄░██░▄▄░█░▄▄▀████░▄▄▀██░▄▄▄████░█████░▄▄▄█▄▄░▄▄██░▄▄▀█░▄▄▀██░▄▄▄░
+   ██▄▄▄▀▀██░███░██░▀▀░█░▀▀░████░██░██░▄▄▄████░█████░▄▄▄███░████░▀▀▄█░▀▀░██▄▄▄▀▀
+   ██░▀▀▀░██░▀▀▀░██░████░██░████░▀▀░██░▀▀▀████░▀▀░██░▀▀▀███░████░██░█░██░██░▀▀▀░
+   ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+   
+   `
+   + COLORS.RESET+ "\n");
   for (let i = 0; i < N; i++) {
     let fila = "";
     for (let j = 0; j < N; j++) {
@@ -55,8 +65,9 @@ function pintarTablero(color = COLORS.BLUE) {
         " " +
         COLORS.RESET;
     }
-    console.log("\t" + fila);
+    console.log("\t\t\t" + fila);
   }
+  console.log(("\n"));
   debug("\n" + COLORS.GREEN + listaPalabras + COLORS.RESET);
 }
 function inicializarTablero() {
