@@ -29,7 +29,7 @@ let tableroAux = document.querySelector("#tablero");
 let columnas = document.querySelectorAll("td");
 let listaPalabras = [];
 let movimientos = [];
-
+let listaAux=listaPalabras;
 function inicializarTablero() {
   let tr, td;
   for (let i = 0; i < N; i++) {
@@ -62,42 +62,49 @@ function pintarTablero() {
     tableroAux.appendChild(tr);
   }
 }
-
+function rellenarLista() {
+  listaPalabras.forEach((palabra) => {
+    let div = document.createElement("div");
+    div.className = "palabra_lisa";
+    div.textContent = palabra;
+    document.querySelector("#lista").appendChild(div);
+  });
+}
 function meterPalabras() {
   listaPalabras = [
     ...LISTASPALABRAS[~~(Math.random() * LISTASPALABRAS.length)],
   ];
-  listaPalabras.forEach((palabra) => {
-    let colocada = false;
-    let dir, y, x;
-    do {
-      dir = DIRECCIONES[~~(Math.random() * DIRECCIONES.length)];
-      //Encontramos un punto valido para los puntos x e y para el comienzo de nuestra palabra teniendo en cuenta su longitud y la dirección
-      //en la que se quiere colocar la palabra
-      y = ALEATORIO(
-        0 - Math.min(dir[0] * palabra.length, 0),
-        N - 1 - Math.max(dir[0] * palabra.length, 0)
-      );
-      x = ALEATORIO(
-        0 - Math.min(dir[1] * palabra.length, 0),
-        N - 1 - Math.max(dir[1] * palabra.length, 0)
-      );
-      let i = 0;
-      while (i < palabra.length) {
-        if (
-          tablero[y + i * dir[0]][x + i * dir[1]] != VACIO &&
-          tablero[y + i * dir[0]][x + i * dir[1]] != palabra[i]
-        )
-          break;
-        i++;
-      }
-      colocada = i == palabra.length;
-    } while (!colocada);
-    //una vez se comprueba el espacio para la palabra se cambian los elementos del tablero por la letra correspondiente
-    for (let i = 0; i < palabra.length; i++) {
-      tablero[y + i * dir[0]][x + i * dir[1]] = palabra[i];
+listaPalabras.forEach((palabra, i) => {
+  let colocada = false;
+  let dir, y, x;
+  do {
+    dir = DIRECCIONES[~~(Math.random() * DIRECCIONES.length)];
+    //Encontramos un punto valido para los puntos x e y para el comienzo de nuestra palabra teniendo en cuenta su longitud y la dirección
+    //en la que se quiere colocar la palabra
+    y = ALEATORIO(
+      0 - Math.min(dir[0] * palabra.length, 0),
+      N - 1 - Math.max(dir[0] * palabra.length, 0)
+    );
+    x = ALEATORIO(
+      0 - Math.min(dir[1] * palabra.length, 0),
+      N - 1 - Math.max(dir[1] * palabra.length, 0)
+    );
+    let i = 0;
+    while (i < palabra.length) {
+      if (
+        tablero[y + i * dir[0]][x + i * dir[1]] != VACIO &&
+        tablero[y + i * dir[0]][x + i * dir[1]] != palabra[i]
+      )
+        break;
+      i++;
     }
-  });
+    colocada = i == palabra.length;
+  } while (!colocada);
+  //una vez se comprueba el espacio para la palabra se cambian los elementos del tablero por la letra correspondiente
+  for (let i = 0; i < palabra.length; i++) {
+    tablero[y + i * dir[0]][x + i * dir[1]] = palabra[i];
+  }
+});
 }
 function rellenarTablero() {
   for (let i = 0; i < N; i++) {
@@ -111,6 +118,7 @@ function rellenarTablero() {
 function generarTablero() {
   inicializarTablero();
   meterPalabras();
+  rellenarLista();
   rellenarTablero();
   pintarTablero();
 }
@@ -136,9 +144,8 @@ function empezarJuego() {
       if (this.getAttribute("activo") == "false") {
         td.setAttribute("activo", "true");
         this.style.backgroundColor = "yellow";
-      } else {
-        td.setAttribute("activo", "false");
-        this.style.backgroundColor = "#212529";
+        palabraFinal += this.textContent;
+        console.log("AÑADIDO " + palabraFinal);
       }
     });
   });
@@ -151,44 +158,57 @@ nuevaPartida();
 document
   .querySelector("input[value='COMPROBAR']")
   .addEventListener("click", function comprobarPalabra() {
-    palabraFinal = "";
     let encontrada = false;
-    document.querySelectorAll("td").forEach((td) => {
-      if (td.getAttribute("activo") == "true") {
-        palabraFinal += td.textContent;
-        td.setAttribute("actio", "false");
-      }
-    });
-    listaPalabras.forEach((palabra) => {
-      console.log(
-        "palabraFinal " +
-          palabraFinal.split("").sort() +
-          "\npalabra " +
-          palabra.split("").sort()
-      );
-      if (
-        palabraFinal.length == palabra.length &&
-        palabraFinal.split().sort() == palabra.split().sort()
-      ) {
-        console.log("ECNOAFNLKSDJASLDJSALKDSAJD");
-      } else {
-        console.log("NO ES LA PALA");
+    if (!palabraFinal.length) {
+      alert("DEBE SELECCIONAR UNA PALABRA");
+    }
+    listaPalabras.forEach((palabra, ind) => {
+      if (palabra == palabraFinal && !encontrada) {
+        console.log(listaPalabras);
+        encontrada = true;
+        listaPalabras.splice(listaPalabras.indexOf(palabra), 1);
+        alert("CORRECTO")
+        document.querySelector("#lista").innerHTML="";
+        rellenarLista();
         document.querySelectorAll("td").forEach((td) => {
-          td.style.backgroundColor = "#212529";
+          if (td.getAttribute("activo") != "false") {
+            td.setAttribute("activo", "find");
+            td.style.backgroundColor = "green";
+            palabraFinal = "";
+            console.log("TODO A 0 " + palabraFinal);
+          }
         });
       }
     });
+    if (!encontrada) {
+      alert("La Palabra no es correcta o ha seleccionado mal");
+    }
+    if (listaPalabras.length<1) {
+      alert("HA GANADO\nREINICIE LA SOPA O CIERRE EL NAVEGADOR");
+      document.querySelector("input").disabled=true;
+      document.querySelectorAll("input")[1].disabled=true;
+    }
 
-    console.log(palabraFinal);
-    palabraFinal = "";
   });
+function palabrasIguales(p1, p2) {
+  p1 = p1.toString().split("").sort();
+  p2 = p2.toString().split("").sort();
+  let iguales = true;
+  for (let i = 0; i < p1.length; i++) {
+    if (p1[i] != p2[i]) iguales = false;
+  }
+  return iguales;
+}
+
 document
   .querySelector("input[value='BORRAR TODO']")
-  .addEventListener("click", function comprobarPalabra() {
+  .addEventListener("click", function borrarTodo() {
     document.querySelectorAll("td").forEach((td) => {
-      if ((!"activo", "acertado")) {
+      if (td.getAttribute("activo") != "find") {
         td.setAttribute("activo", "false");
         td.style.backgroundColor = "#212529";
+        palabraFinal = "";
+        console.log("TODO A 0 " + palabraFinal);
       }
     });
   });

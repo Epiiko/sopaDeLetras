@@ -18,3 +18,12 @@ td{
 #botones{
     justify-content: space-evenly;
 }
+#lista{
+    display: flex;
+}
+#lista div{
+    margin: auto;
+    color: green;
+    font-weight: bold;
+    margin-bottom: 3%;
+}

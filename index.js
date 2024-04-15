@@ -1,7 +1,8 @@
 //constantes
-const CHEAT = true;
+const CHEAT = false;
 const N = 10;
 const VACIO = " ";
+let numlista;
 const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const COLORS = {
   RESET: "\x1b[0m",
@@ -28,7 +29,12 @@ const LISTASPALABRAS = [
   ["COCHE", "MOTO", "AVION", "BUS", "CASCO"],
   ["AGUA", "TIERRA", "VIENTO", "FUEGO", "HIELO"],
   ["XBOX", "SEGA", "STEAM", "MARIO", "MANDO"],
-  
+];
+const TEMALISTAS = [
+  "Animales",
+  "Vehiculos",
+  "Elementos Naturales",
+  "Videojuegos",
 ];
 const cls = function () {
   process.stdout.write("\x1bc");
@@ -43,18 +49,21 @@ const ALEATORIO = function (min, max) {
 let tablero = [];
 let letrasEncontradas = [];
 let listaPalabras = [];
-
 function pintarTablero(color = COLORS.BLUE) {
-  console.log("\t\t" + COLORS.GREEN +
-   `
-   ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-   ██░▄▄▄░██░▄▄▄░██░▄▄░█░▄▄▀████░▄▄▀██░▄▄▄████░█████░▄▄▄█▄▄░▄▄██░▄▄▀█░▄▄▀██░▄▄▄░
-   ██▄▄▄▀▀██░███░██░▀▀░█░▀▀░████░██░██░▄▄▄████░█████░▄▄▄███░████░▀▀▄█░▀▀░██▄▄▄▀▀
-   ██░▀▀▀░██░▀▀▀░██░████░██░████░▀▀░██░▀▀▀████░▀▀░██░▀▀▀███░████░██░█░██░██░▀▀▀░
-   ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+  console.log(
+    "\t\t" +
+      COLORS.GREEN +
+      `
    
-   `
-   + COLORS.RESET+ "\n");
+   █░▄▄▄░██░▄▄▄░██░▄▄░█░▄▄▀████░▄▄▀██░▄▄▄████░█████░▄▄▄█▄▄░▄▄██░▄▄▀█░▄▄▀██░▄▄▄░
+   █▄▄▄▀▀██░███░██░▀▀░█░▀▀░████░██░██░▄▄▄████░█████░▄▄▄███░████░▀▀▄█░▀▀░██▄▄▄▀▀
+   █░▀▀▀░██░▀▀▀░██░████░██░████░▀▀░██░▀▀▀████░▀▀░██░▀▀▀███░████░██░█░██░██░▀▀▀░
+   
+   
+   ` +
+      COLORS.RESET +
+      "\n"
+  );
   for (let i = 0; i < N; i++) {
     let fila = "";
     for (let j = 0; j < N; j++) {
@@ -67,7 +76,9 @@ function pintarTablero(color = COLORS.BLUE) {
     }
     console.log("\t\t\t" + fila);
   }
-  console.log(("\n"));
+  console.log(
+    "\n" + COLORS.GREEN + "El tema de la sopa es: " + TEMALISTAS[numlista] + COLORS.RESET
+  );
   debug("\n" + COLORS.GREEN + listaPalabras + COLORS.RESET);
 }
 function inicializarTablero() {
@@ -81,9 +92,8 @@ function inicializarTablero() {
   }
 }
 function meterPalabras() {
-  listaPalabras = [
-    ...LISTASPALABRAS[~~(Math.random() * LISTASPALABRAS.length)],
-  ];
+  numlista = ~~(Math.random() * LISTASPALABRAS.length);
+  listaPalabras = [...LISTASPALABRAS[numlista]];
   listaPalabras.forEach((palabra) => {
     let colocada = false;
     let dir, y, x;
